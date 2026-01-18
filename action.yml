@@ -1,0 +1,49 @@
+name: "Autoglot Translate"
+description: "Translate Xcode String Catalogs (.xcstrings) using Autoglot"
+author: "xzebra"
+
+branding:
+  icon: "globe"
+  color: "blue"
+
+inputs:
+  api-key:
+    description: "Your Autoglot API key (get one at https://autoglot.app/dashboard/api-keys)"
+    required: true
+  file:
+    description: "Path to .xcstrings file(s). Use glob pattern or leave empty to find all"
+    required: false
+    default: ""
+  languages:
+    description: 'Comma-separated list of target languages (e.g., "de,fr,ja")'
+    required: true
+  api-url:
+    description: "Autoglot API URL (default: https://api.autoglot.app)"
+    required: false
+    default: "https://api.autoglot.app"
+  parallel:
+    description: "Number of parallel translations (default: 4)"
+    required: false
+    default: "4"
+
+outputs:
+  files-translated:
+    description: "Number of files translated"
+  total-characters:
+    description: "Total characters translated"
+  total-strings:
+    description: "Total strings translated"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Translate
+      shell: bash
+      env:
+        AUTOGLOT_API_KEY: ${{ inputs.api-key }}
+        AUTOGLOT_API_URL: ${{ inputs.api-url }}
+        INPUT_FILE: ${{ inputs.file }}
+        TARGET_LANGUAGES: ${{ inputs.languages }}
+        PARALLEL_JOBS: ${{ inputs.parallel }}
+      run: |
+        ${{ github.action_path }}/translate.sh
